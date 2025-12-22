@@ -38,31 +38,6 @@ function HomePage() {
         </Link>
       </section>
 
-      {/* Main Cards */}
-      <section style={styles.mainSection}>
-        <div style={styles.cardGrid}>
-          <div style={styles.card}>
-            <h2 style={styles.cardTitle}>Report Lost Item</h2>
-            <p style={styles.cardText}>
-              Lost something? Post the details and increase your chances of finding it.
-            </p>
-            <Link to="/register" style={styles.cardButton}>
-              Post Lost Item
-            </Link>
-          </div>
-
-          <div style={styles.card}>
-            <h2 style={styles.cardTitle}>Bounty Board</h2>
-            <p style={styles.cardText}>
-              Offer rewards for finding your lost items or help others and earn bounties.
-            </p>
-            <Link to="/register" style={styles.cardButton}>
-              View Bounties
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* How It Works */}
       <section style={styles.howItWorks}>
         <h2 style={styles.howTitle}>How It Works</h2>
@@ -96,6 +71,8 @@ function HomePage() {
     </div>
   );
 }
+
+export default HomePage;
 
 const styles = {
   page: {
@@ -179,37 +156,6 @@ const styles = {
     color: "#000"
   },
 
-  mainSection: {
-    padding: "80px 20px"
-  },
-  cardGrid: {
-    maxWidth: "1100px",
-    margin: "0 auto",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "24px"
-  },
-  card: {
-    border: "1px solid #e5e7eb",
-    borderRadius: "16px",
-    padding: "32px"
-  },
-  cardTitle: {
-    fontSize: "24px",
-    marginBottom: "16px"
-  },
-  cardText: {
-    color: "#6b7280",
-    marginBottom: "24px"
-  },
-  cardButton: {
-    padding: "10px 20px",
-    border: "2px solid #000",
-    borderRadius: "8px",
-    textDecoration: "none",
-    color: "#000"
-  },
-
   howItWorks: {
     background: "#f9fafb",
     padding: "100px 20px"
@@ -249,5 +195,3 @@ const styles = {
     color: "#6b7280"
   }
 };
-
-export default HomePage;
