@@ -15,7 +15,6 @@ function ItemSearch() {
 
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
   const [dateLost, setDateLost] = useState("");
 
   const [results, setResults] = useState([]);
@@ -29,14 +28,16 @@ function ItemSearch() {
     if (!storedUser) navigate("/");
   }, [navigate]);
 
-   const itemsDataBase =[
-    { id: 1, name: "Keys", description: "Blue keychain near library", category: "Keys", location: "Library", dateLost: "2025-12-10" },
-    { id: 2, name: "Laptop", description: "Silver MacBook", category: "Electronics", location: "Study Room", dateLost: "2025-12-15" },
-    { id: 3, name: "Wallet", description: "Brown leather", category: "Wallet", location: "Cafeteria", dateLost: "2025-12-12" },
-    { id: 4, name: "Water Bottle", description: "Hydroflask", category: "Bottle", location: "Gym", dateLost: "2025-12-18" },
-    { id: 5, name: "Glasses", description: "Rayban frames", category: "Other", location: "Bus Stop", dateLost: "2025-12-20" },
-    { id: 6, name: "Backpack", description: "North Face, black", category: "Other", location: "Library", dateLost: "2025-12-21" }
+  const itemsDataBase =[
+    { id: 1, name: "Keys", description: "Blue keychain near library", category: "Keys", dateLost: "2025-12-10" },
+    { id: 2, name: "Laptop", description: "Silver MacBook", category: "Electronics", dateLost: "2025-12-15" },
+    { id: 3, name: "Wallet", description: "Brown leather", category: "Wallet", dateLost: "2025-12-12" },
+    { id: 4, name: "Water Bottle", description: "Hydroflask", category: "Bottle", dateLost: "2025-12-18" },
+    { id: 5, name: "Glasses", description: "Rayban frames", category: "Other", dateLost: "2025-12-20" },
+    { id: 6, name: "Backpack", description: "North Face, black", category: "Other", dateLost: "2025-12-21" }
   ];
+    
+  
 
   
   useEffect(() => {
@@ -56,7 +57,6 @@ function ItemSearch() {
       user: user?.name || "User",
       keyword: keyword.trim(),
       category,
-      location,
       dateLost,
       savedAt: new Date().toISOString()
     };
@@ -69,39 +69,37 @@ function ItemSearch() {
   const clearFilters = () => {
     setKeyword("");
     setCategory("");
-    setLocation("");
     setDateLost("");
     setResults([]);
     setHasSearched(false);
   };
 
   const onSearch = (e) => {
-    e.preventDefault();
-    setHasSearched(true);
+  e.preventDefault();
+  setHasSearched(true);
 
-    const kw = keyword.trim().toLowerCase();
-    const filtered = itemsDataBase.filter((it) => {
-      const hitKeyword =
-        !kw ||
-        it.name.toLowerCase().includes(kw) ||
-        it.description.toLowerCase().includes(kw);
+  const kw = keyword.trim().toLowerCase();
 
-      const hitCategory = !category || it.category === category;
-      const hitLocation = !location || it.location === location;
-      const hitDate = !dateLost || it.dateLost === dateLost;
+  const filtered = itemsDataBase.filter((item) => {
+    const text = (item.name + " " + item.description).toLowerCase();
 
-      return hitKeyword && hitCategory && hitLocation && hitDate;
-    });
+    const okKeyword = !kw || text.includes(kw);
+    const okCategory = !category || item.category === category;
+   
+    const okDate = !dateLost || item.dateLost === dateLost;
 
-    setResults(filtered);
-  };
+    return okKeyword && okCategory && okDate;
+  });
+
+  setResults(filtered);
+};
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
         <div style={styles.header}>
           <h1 style={styles.title}>Item Search</h1>
-          <p style={styles.subtitle}>Search by keyword, category, location, and date.</p>
+          <p style={styles.subtitle}>Search by keyword, category, and date.</p>
         </div>
 
         <form onSubmit={onSearch}>
@@ -111,7 +109,7 @@ function ItemSearch() {
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 style={styles.input}
-                placeholder="keys, wallet..."
+                placeholder="keys, wallet,laptop ..."
               />
             </Field>
 
@@ -124,14 +122,6 @@ function ItemSearch() {
               </select>
             </Field>
 
-            <Field label="Location">
-              <select value={location} onChange={(e) => setLocation(e.target.value)} style={styles.input}>
-                <option value="">All</option>
-                {["Library", "Cafeteria", "Study Room", "Gym", "Bus Stop"].map((l) => (
-                  <option key={l} value={l}>{l}</option>
-                ))}
-              </select>
-            </Field>
 
             <Field label="Date Lost">
               <input type="date" value={dateLost} onChange={(e) => setDateLost(e.target.value)} style={styles.input} />
@@ -153,20 +143,20 @@ function ItemSearch() {
             ) : results.length === 0 ? (
               <p style={styles.muted}>No Result Found.</p>
             ) : (
-              results.map((it) => (
+              results.map((item) => (
                 <div
-                  key={it.id}
+                  key={item.id}
                   style={styles.itemRow}
-                  onClick={() => setSelectedItem(it)}
+                  onClick={() => setSelectedItem(item)}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f3f4f6")}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
                   <div style={styles.itemTop}>
-                    <strong>{it.name}</strong>
-                    <span style={styles.badge}>{it.category}</span>
+                    <strong>{item.name}</strong>
+                    <span style={styles.badge}>{item.category}</span>
                   </div>
-                  <div style={styles.small}>{it.location} • {it.dateLost}</div>
-                  <div style={styles.smallMuted}>{it.description}</div>
+                  <div style={styles.small}>{item.dateLost}</div>
+                  <div style={styles.smallMuted}>{item.description}</div>
                 </div>
               ))
             )}
@@ -186,7 +176,7 @@ function ItemSearch() {
                       <span style={styles.smallMuted}>({new Date(s.savedAt).toLocaleString()})</span>
                     </div>
                     <div style={styles.smallMuted}>
-                      Keyword: {s.keyword || "-"} • Category: {s.category || "All"} • Location: {s.location || "All"} • Date: {s.dateLost || "-"}
+                      Keyword: {s.keyword || "-"} • Category: {s.category || "All"} • Date: {s.dateLost || "-"}
                     </div>
                   </div>
                   <button onClick={() => removeSaved(s.id)} style={styles.deleteBtn} title="Remove">✕</button>
@@ -206,6 +196,8 @@ function ItemSearch() {
             <p><strong>Location:</strong> {selectedItem.location}</p>
             <p><strong>Date Lost:</strong> {selectedItem.dateLost}</p>
             <p><strong>Description:</strong> {selectedItem.description}</p>
+
+           
 
             <button onClick={() => setSelectedItem(null)} style={{ ...styles.btnGhost, width: "100%", marginTop: 10 }}>
               Close
@@ -253,7 +245,7 @@ const styles = {
   title: { fontSize: 24, marginBottom: 6 },
   subtitle: { color: "#6b7280", fontSize: 14, margin: 0 },
 
-  grid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginTop: 18 },
+  grid: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 18 },
   label: { display: "block", marginBottom: 8, fontSize: 14 },
 
   input: {
