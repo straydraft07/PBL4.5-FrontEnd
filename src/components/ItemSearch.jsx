@@ -96,9 +96,6 @@ function ItemSearch() {
     setResults(filtered);
   };
 
-
-
-  
   return (
     <div style={styles.page}>
       <div style={styles.card}>
