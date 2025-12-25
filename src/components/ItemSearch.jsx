@@ -29,15 +29,14 @@ function ItemSearch() {
     if (!storedUser) navigate("/");
   }, [navigate]);
 
-  const itemsDataBase =[
-      { id: 1, name: "Keys", description: "Blue keychain near library entrance", category: "Keys", location: "Library", dateLost: "2025-12-10" },
-      { id: 2, name: "Wallet", description: "Brown leather wallet, student card inside", category: "Wallet", location: "Cafeteria", dateLost: "2025-12-12" },
-      { id: 3, name: "Laptop", description: "Silver MacBook, sticker on the back", category: "Electronics", location: "Study Room", dateLost: "2025-12-15" },
-      { id: 4, name: "Water Bottle", description: "Black bottle, scratches on the bottom", category: "Bottle", location: "Gym", dateLost: "2025-12-18" },
-      { id: 5, name: "Umbrella", description: "Small black umbrella", category: "Other", location: "Bus Stop", dateLost: "2025-12-20" }
-    ]
-    
-  ;
+   const itemsDataBase =[
+    { id: 1, name: "Keys", description: "Blue keychain near library", category: "Keys", location: "Library", dateLost: "2025-12-10" },
+    { id: 2, name: "Laptop", description: "Silver MacBook", category: "Electronics", location: "Study Room", dateLost: "2025-12-15" },
+    { id: 3, name: "Wallet", description: "Brown leather", category: "Wallet", location: "Cafeteria", dateLost: "2025-12-12" },
+    { id: 4, name: "Water Bottle", description: "Hydroflask", category: "Bottle", location: "Gym", dateLost: "2025-12-18" },
+    { id: 5, name: "Glasses", description: "Rayban frames", category: "Other", location: "Bus Stop", dateLost: "2025-12-20" },
+    { id: 6, name: "Backpack", description: "North Face, black", category: "Other", location: "Library", dateLost: "2025-12-21" }
+  ];
 
   
   useEffect(() => {
@@ -211,16 +210,6 @@ function ItemSearch() {
             <p><strong>Location:</strong> {selectedItem.location}</p>
             <p><strong>Date Lost:</strong> {selectedItem.dateLost}</p>
             <p><strong>Description:</strong> {selectedItem.description}</p>
-
-            <button
-              onClick={() => {
-                alert("Claim request submitted.");
-                setSelectedItem(null);
-              }}
-              style={{ ...styles.btnPrimary, width: "100%" }}
-            >
-              Start Claim
-            </button>
 
             <button onClick={() => setSelectedItem(null)} style={{ ...styles.btnGhost, width: "100%", marginTop: 10 }}>
               Close
