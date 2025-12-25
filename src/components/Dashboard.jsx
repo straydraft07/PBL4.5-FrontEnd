@@ -25,6 +25,11 @@ function Dashboard() {
       description: "Browse items that have been found",
       path: "/found-items",
     }
+    {
+      title: "Search Item",
+      description: "Search for a specific item",
+      path: "/item-search",
+    }
   ];
 
   return (
