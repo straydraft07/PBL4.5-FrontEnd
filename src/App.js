@@ -7,6 +7,7 @@ import SignUp from "./components/SignUp";
 import Dashboard from './components/Dashboard';
 import FoundItems from './components/FoundItems';
 import RequestedItems from './components/RequestedItems';
+import ItemSearch from './components/ItemSearch';
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/requested-items" element={<RequestedItems />} />
                 <Route path="/found-items" element={<FoundItems />} />
+                <Route path="/item-search" element={<ItemSearch />} />
             </Routes>
         </Router>
     );
