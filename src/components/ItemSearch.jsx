@@ -103,7 +103,6 @@ function ItemSearch() {
     <div style={styles.page}>
       <div style={styles.card}>
         <div style={styles.header}>
-          <div style={styles.iconBox}>🔎</div>
           <h1 style={styles.title}>Item Search</h1>
           <p style={styles.subtitle}>Search by keyword, category, location, and date.</p>
         </div>
