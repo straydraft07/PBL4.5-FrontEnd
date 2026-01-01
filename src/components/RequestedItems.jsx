@@ -2,172 +2,345 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function RequestedItems() {
-  const navigate = useNavigate();
-  const [items, setItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+    const navigate = useNavigate();
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const mockData = [
-      { id: 1, name: "Keys", description: "Blue keychain near library", owner: "John Doe", date: "2023-10-01" },
-      { id: 2, name: "Laptop", description: "Silver MacBook", owner: "Jane Smith", date: "2023-10-02" },
-      { id: 3, name: "Wallet", description: "Brown leather", owner: "Bob Wilson", date: "2023-10-03" },
-      { id: 4, name: "Water Bottle", description: "Hydroflask", owner: "Alice Brown", date: "2023-10-04" },
-      { id: 5, name: "Glasses", description: "Rayban frames", owner: "Charlie Davis", date: "2023-10-05" },
+    const user = JSON.parse(localStorage.getItem("user")) || null;
+    const isAuthorized = user?.IsAdmin || user?.IsStaff;
+
+    const [showResolveModal, setShowResolveModal] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [awardUsername, setAwardUsername] = useState("");
+
+    const openResolveModal = (item) => {
+        setSelectedItem(item);
+        setAwardUsername("");
+        setShowResolveModal(true);
+    };
+
+    const closeResolveModal = () => {
+        setShowResolveModal(false);
+        setSelectedItem(null);
+    };
+
+    const handleResolveConfirm = async () => {
+        if (!awardUsername || !selectedItem) {
+            alert("Please enter a username.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:8080/api/item/reward_user", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    itemId: selectedItem.id,
+                    username: awardUsername
+                })
+            });
+
+            if (response.ok) {
+                alert("Item resolved and reward issued.");
+                closeResolveModal();
+                fetchData(); // refresh list
+            } else {
+                alert("Failed to resolve item.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Server error while resolving item.");
+        }
+    };
+
+
+    const mocks = [
+        {
+            id: "req-1",
+            name: "iPhone 13",
+            description: "Black case, cracked screen protector",
+            location: "Student Union / Cafe",
+            date: "Oct 26, 2023",
+            bounty: 200,
+        },
+        {
+            id: "req-2",
+            name: "Blue Backpack",
+            description: "Contains a chemistry textbook and a calculator",
+            location: "Science Building Room 302",
+            date: "Oct 27, 2023",
+            bounty: 0,
+        },
     ];
-    setItems(mockData);
-  }, []);
 
-  return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-        <h1 style={styles.title}>Requested Items</h1>
-        <p style={styles.subtitle}>
-          Requests submitted by users who lost their items
-        </p>
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            // Updated endpoint for requested/lost items
+            const response = await fetch("http://localhost:8080/api/item/get_requested?query=", {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
 
-        <div style={styles.list}>
-          {items.map((item) => (
-            <div
-              key={item.id}
-              style={styles.listItem}
-              onClick={() => setSelectedItem(item)}
-            >
-              <div>
-                <h3 style={styles.itemName}>{item.name}</h3>
-                <p style={styles.description}>{item.description}</p>
-              </div>
+            if (response.ok) {
+                const backendData = await response.json();
 
-              <div style={styles.meta}>
-                <span>{item.owner}</span>
-                <span>{item.date}</span>
-              </div>
+                const formattedBackendData = backendData.map(backendItem => ({
+                    id: backendItem.id || Math.random().toString(),
+                    name: backendItem.Item?.Name || "No Name",
+                    description: backendItem.Item?.Description || "No Description",
+                    location: backendItem.LastLocation || "Unknown", // Assuming backend uses LocationLost
+                    date: backendItem.LastDate,
+                    bounty: backendItem.Bounty,
+                }));
+
+                setItems([...mocks, ...formattedBackendData]);
+            } else {
+                setItems(mocks);
+            }
+        } catch (error) {
+            console.error("Connection error:", error);
+            setItems(mocks);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    return (
+        <div style={styles.page}>
+            <div style={styles.container}>
+                <h1 style={styles.title}>Requested Items</h1>
+                <p style={styles.subtitle}>Browse items reported as lost or requested</p>
+
+                <div style={styles.grid}>
+                    {items.length > 0 ? (
+                        items.map((item) => (
+                            <div key={item.id} style={styles.card}>
+                                <div style={styles.cardContent}>
+                                    <h3 style={styles.itemTitle}>{item.name}</h3>
+                                    <p style={styles.itemDesc}>{item.description}</p>
+
+                                    <div style={styles.metaContainer}>
+                                        <div style={styles.metaItem}>
+                                            <span style={styles.metaLabel}>Last Seen:</span> {item.location}
+                                        </div>
+                                        <div style={styles.metaItem}>
+                                            <span style={styles.metaLabel}>Date Reported:</span> {item.date}
+                                        </div>
+                                        <div style ={styles.metaItem}>
+                                            <span style={styles.metaLabel}>Bounty:</span> ${item.bounty}
+                                        </div>
+                                        {isAuthorized && (
+                                            <button
+                                                onClick={() => openResolveModal(item)}
+                                                style={styles.resolveButton}
+                                            >
+                                                Resolve
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p style={styles.empty}>No requested items at this time.</p>
+                    )}
+                </div>
+
+                {showResolveModal && (
+                    <div style={styles.modalOverlay}>
+                        <div style={styles.modal}>
+                            <h3 style={{ marginBottom: "12px" }}>Resolve Item</h3>
+
+                            <p style={{ fontSize: "14px", marginBottom: "8px" }}>
+                                Award bounty for: <strong>{selectedItem?.name}</strong>
+                            </p>
+
+                            <input
+                                type="text"
+                                placeholder="User to award"
+                                value={awardUsername}
+                                onChange={(e) => setAwardUsername(e.target.value)}
+                                style={styles.input}
+                            />
+
+                            <div style={styles.modalActions}>
+                                <button
+                                    onClick={handleResolveConfirm}
+                                    style={styles.confirmButton}
+                                >
+                                    Confirm
+                                </button>
+                                <button
+                                    onClick={closeResolveModal}
+                                    style={styles.cancelButton}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <button onClick={() => navigate("/dashboard")} style={styles.backButton}>
+                    Back to Dashboard
+                </button>
             </div>
-          ))}
         </div>
-
-        <button
-          onClick={() => navigate("/dashboard")}
-          style={styles.backButton}
-        >
-          Back to Dashboard
-        </button>
-      </div>
-
-      {/* MODAL */}
-      {selectedItem && (
-        <div
-          style={styles.modalOverlay}
-          onClick={() => setSelectedItem(null)}
-        >
-          <div
-            style={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 style={{ marginBottom: "16px" }}>
-              Request Details
-            </h2>
-
-            <p><strong>Item:</strong> {selectedItem.name}</p>
-            <p><strong>Description:</strong> {selectedItem.description}</p>
-            <p><strong>Requested by:</strong> {selectedItem.owner}</p>
-            <p><strong>Date:</strong> {selectedItem.date}</p>
-
-            <button
-              style={styles.closeButton}
-              onClick={() => setSelectedItem(null)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    );
 }
 
 const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #f3f4f6, #e5e7eb)",
-    padding: "40px"
-  },
-  container: {
-    maxWidth: "800px",
-    margin: "0 auto"
-  },
-  title: {
-    fontSize: "32px",
-    marginBottom: "6px"
-  },
-  subtitle: {
-    fontSize: "14px",
-    color: "#6b7280",
-    marginBottom: "30px"
-  },
-  list: {
-    background: "#fff",
-    borderRadius: "12px",
-    border: "1px solid #e5e7eb",
-    overflow: "hidden"
-  },
-  listItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "16px 20px",
-    borderBottom: "1px solid #e5e7eb",
-    cursor: "pointer",
-    transition: "background 0.15s"
-  },
-  itemName: {
-    fontSize: "16px",
-    marginBottom: "4px"
-  },
-  description: {
-    fontSize: "13px",
-    color: "#6b7280"
-  },
-  meta: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-end",
-    fontSize: "12px",
-    color: "#9ca3af"
-  },
-  backButton: {
-    marginTop: "30px",
-    background: "#000",
-    color: "#fff",
-    border: "none",
-    padding: "12px 24px",
-    borderRadius: "8px",
-    cursor: "pointer"
-  },
-  modalOverlay: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000
-  },
-  modalContent: {
-    background: "#fff",
-    padding: "24px",
-    borderRadius: "16px",
-    width: "90%",
-    maxWidth: "400px"
-  },
-  closeButton: {
-    marginTop: "20px",
-    width: "100%",
-    padding: "12px",
-    background: "#000",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
-  }
+
+    resolveButton: {
+        marginTop: "12px",
+        padding: "8px 12px",
+        background: "#10b981",
+        color: "#fff",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontSize: "12px",
+        fontWeight: "600"
+    },
+
+    modalOverlay: {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "rgba(0,0,0,0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000
+    },
+
+    modal: {
+        background: "#fff",
+        padding: "24px",
+        borderRadius: "12px",
+        width: "320px",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.2)"
+    },
+
+    input: {
+        width: "100%",
+        padding: "8px",
+        marginBottom: "16px",
+        borderRadius: "6px",
+        border: "1px solid #d1d5db"
+    },
+
+    modalActions: {
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "10px"
+    },
+
+    confirmButton: {
+        background: "#10b981",
+        color: "#fff",
+        border: "none",
+        padding: "8px 14px",
+        borderRadius: "6px",
+        cursor: "pointer"
+    },
+
+    cancelButton: {
+        background: "#e5e7eb",
+        border: "none",
+        padding: "8px 14px",
+        borderRadius: "6px",
+        cursor: "pointer"
+    },
+
+    page: {
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #f3f4f6, #e5e7eb)",
+        padding: "40px"
+    },
+    container: {
+        maxWidth: "1000px",
+        margin: "0 auto"
+    },
+    title: {
+        fontSize: "32px",
+        marginBottom: "6px"
+    },
+    subtitle: {
+        fontSize: "14px",
+        color: "#6b7280",
+        marginBottom: "32px"
+    },
+    grid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+        gap: "20px"
+    },
+    card: {
+        background: "#fff",
+        border: "1px solid #e5e7eb",
+        borderRadius: "16px",
+        overflow: "hidden",
+        boxShadow: "0 10px 20px rgba(0,0,0,0.05)",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "180px" // Adjusted height since images are gone
+    },
+    cardContent: {
+        padding: "20px",
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column"
+    },
+    itemTitle: {
+        fontSize: "18px",
+        marginBottom: "8px",
+        fontWeight: "bold",
+        color: "#111827"
+    },
+    itemDesc: {
+        fontSize: "14px",
+        color: "#4b5563",
+        marginBottom: "20px",
+        lineHeight: "1.5"
+    },
+    metaContainer: {
+        borderTop: "1px solid #f3f4f6",
+        paddingTop: "12px",
+        marginTop: "auto"
+    },
+    metaItem: {
+        fontSize: "12px",
+        color: "#6b7280",
+        marginBottom: "4px"
+    },
+    metaLabel: {
+        fontWeight: "600",
+        color: "#374151"
+    },
+    empty: {
+        textAlign: "center",
+        color: "#6b7280",
+        gridColumn: "1 / -1",
+        marginTop: "40px"
+    },
+    backButton: {
+        marginTop: "40px",
+        background: "#000",
+        color: "#fff",
+        border: "none",
+        padding: "12px 24px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "500"
+    }
 };
 
 export default RequestedItems;

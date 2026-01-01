@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const isAuthorized = user?.IsAdmin || user?.IsStaff;
 
-  useEffect(() => {
+
+    useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -14,24 +16,49 @@ function Dashboard() {
     }
   }, [navigate]);
 
-  const cards = [
-    {
-      title: "Requested Items",
-      description: "View items people are looking for",
-      path: "/requested-items",
-    },
-    {
-      title: "Found Items",
-      description: "Browse items that have been found",
-      path: "/found-items",
-    }
-  ];
+// Inside your Dashboard component
+    const cards = [
+        {
+            title: "Requested Items",
+            description: "View items people are looking for",
+            path: "/requested-items",
+            icon: "🔍"
+        },
+        {
+            title: "Found Items",
+            description: "Browse items that have been found",
+            path: "/found-items",
+            icon: "📦"
+        },
+        {
+            title: "Report an Item",
+            description: "Submit a new lost or found request",
+            path: "/add-request",
+            icon: "➕"
+        },
+        {
+            title: "Your Activity",
+            description: "View your claims and reports",
+            path: "/your-page",
+            icon: "👤"
+        },
+        ...(isAuthorized
+            ? [
+                {
+                    title: "Add Lost",
+                    description: "Add a lost item on behalf of a user",
+                    path: "/add-lost",
+                    icon: "📝"
+                }
+            ]
+            : [])
+    ];
 
   return (
     <div style={styles.page}>
       <div style={styles.container}>
         <h1 style={styles.title}>
-          Welcome{user ? `, ${user.name}` : ""}!
+          Welcome{user ? `, ${user.username}` : ""}!
         </h1>
         <p style={styles.subtitle}>
           Choose an option to continue

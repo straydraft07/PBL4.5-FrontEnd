@@ -1,10 +1,7 @@
-export const handleLogin = async (username, password) => {
+export const getRequested = async (username, password) => {
     const url = 'http://localhost:8080/api/login';
 
-    const loginData = {
-        username: username,
-        password: password,
-    };
+    // Some filtering
 
     try {
         console.log("Sending login request:", loginData.username, loginData.password);

@@ -1,70 +1,90 @@
 import React, { useState } from 'react';
+import { handleLogin } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
-  const navigate = useNavigate();
-  const [userId, setUserId] = useState('');
-  const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+    // 1. State names must match what is used in the <input>
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const mockUser = {
-      name: userId || 'Demo User',
-      role: userId === 'admin' ? 'admin' : 'user'
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!username || !password) {
+            alert("Please enter both username and password.");
+            return;
+        }
+
+        setIsLoading(true);
+
+        console.log(username + password);
+        const userData = await handleLogin(username, password);
+        setIsLoading(false);
+
+        if (userData != null) {
+            localStorage.setItem('user', JSON.stringify(userData));
+            navigate('/dashboard');
+            alert('Login Successful! Welcome.');
+        } else {
+            alert('Login failed. Please check your credentials.');
+        }
     };
 
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    navigate('/dashboard');
-  };
+    return (
+        <div style={styles.page}>
+            <div style={styles.card}>
+                <div style={styles.header}>
+                    <div style={styles.iconBox}>👤</div>
+                    <h1 style={styles.title}>Welcome Back</h1>
+                    <p style={styles.subtitle}>Enter your credentials to continue</p>
+                </div>
 
-  return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <div style={styles.header}>
-          <div style={styles.iconBox}>👤</div>
-          <h1 style={styles.title}>Welcome Back</h1>
-          <p style={styles.subtitle}>Enter your credentials to continue</p>
+                {/* 2. Changed 'onSubmit' to 'handleSubmit' */}
+                <form onSubmit={handleSubmit}>
+                    <div style={styles.field}>
+                        <label style={styles.label}>User ID</label>
+                        <input
+                            type="text"
+                            // 3. Changed 'userId' to 'username'
+                            value={username}
+                            // 4. Changed 'setUserId' to 'setUsername'
+                            onChange={(e) => setUsername(e.target.value)}
+                            style={styles.input}
+                            placeholder="Enter your user ID"
+                        />
+                    </div>
+
+                    <div style={styles.field}>
+                        <label style={styles.label}>Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            style={styles.input}
+                            placeholder="Enter your password"
+                        />
+                    </div>
+
+                    <button type="submit" style={styles.button} disabled={isLoading}>
+                        {isLoading ? 'Logging in...' : 'Login'}
+                    </button>
+                </form>
+
+                <div style={styles.footer}>
+                    <p style={styles.hint}>
+                        Demo: Use any User ID <br />
+                        Use <strong>admin</strong> for admin access
+                    </p>
+                </div>
+            </div>
         </div>
-
-        <form onSubmit={onSubmit}>
-          <div style={styles.field}>
-            <label style={styles.label}>User ID</label>
-            <input
-              type="text"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              style={styles.input}
-              placeholder="Enter your user ID"
-            />
-          </div>
-
-          <div style={styles.field}>
-            <label style={styles.label}>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <button type="submit" style={styles.button}>
-            Login
-          </button>
-        </form>
-
-        <div style={styles.footer}>
-          <p style={styles.hint}>
-            Demo: Use any User ID <br />
-            Use <strong>admin</strong> for admin access
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
+
+// ... styles remain the same
 
 const styles = {
   page: {

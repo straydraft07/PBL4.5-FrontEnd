@@ -7,6 +7,9 @@ import SignUp from "./components/SignUp";
 import Dashboard from './components/Dashboard';
 import FoundItems from './components/FoundItems';
 import RequestedItems from './components/RequestedItems';
+import YourPage from './components/YourPage';
+import AddRequest from './components/AddRequest';
+import AddLost from './components/AddLost';
 
 function App() {
     return (
@@ -18,6 +21,9 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/requested-items" element={<RequestedItems />} />
                 <Route path="/found-items" element={<FoundItems />} />
+                <Route path="/your-page" element={<YourPage />} />
+                <Route path="/add-request" element={<AddRequest />} />
+                <Route path="/add-lost" element={<AddLost />} />
             </Routes>
         </Router>
     );
