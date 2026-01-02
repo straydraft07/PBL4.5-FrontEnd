@@ -12,6 +12,8 @@ function RequestedItems() {
     const [showResolveModal, setShowResolveModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [awardUsername, setAwardUsername] = useState("");
+    const [query, setQuery] = useState("");
+
 
     const openResolveModal = (item) => {
         setSelectedItem(item);
@@ -43,7 +45,7 @@ function RequestedItems() {
             if (response.ok) {
                 alert("Item resolved and reward issued.");
                 closeResolveModal();
-                fetchData(); // refresh list
+                fetchData();
             } else {
                 alert("Failed to resolve item.");
             }
@@ -73,14 +75,23 @@ function RequestedItems() {
         },
     ];
 
-    const fetchData = async () => {
+    const fetchData = async (searchQuery = "") => {
         try {
             setLoading(true);
-            // Updated endpoint for requested/lost items
-            const response = await fetch("http://localhost:8080/api/item/get_requested?query=", {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            });
+            const sql =
+                "SELECT * FROM found_items WHERE " +
+                "(name LIKE '%" + searchQuery + "%' " +
+                "OR description LIKE '%" + searchQuery + "%' " +
+                "OR location_found LIKE '%" + searchQuery + "%')";
+
+            const response = await fetch(
+                "http://localhost:8080/api/item/get_requested",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sql })
+                }
+            );
 
             if (response.ok) {
                 const backendData = await response.json();
@@ -89,7 +100,7 @@ function RequestedItems() {
                     id: backendItem.id || Math.random().toString(),
                     name: backendItem.Item?.Name || "No Name",
                     description: backendItem.Item?.Description || "No Description",
-                    location: backendItem.LastLocation || "Unknown", // Assuming backend uses LocationLost
+                    location: backendItem.LastLocation || "Unknown",
                     date: backendItem.LastDate,
                     bounty: backendItem.Bounty,
                 }));
@@ -115,6 +126,25 @@ function RequestedItems() {
             <div style={styles.container}>
                 <h1 style={styles.title}>Requested Items</h1>
                 <p style={styles.subtitle}>Browse items reported as lost or requested</p>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        fetchData(query);
+                    }}
+                    style={styles.searchForm}
+                >
+                    <input
+                        type="text"
+                        placeholder="Search requested items..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        style={styles.searchInput}
+                    />
+                    <button type="submit" style={styles.searchButton}>
+                        Search
+                    </button>
+                </form>
+
 
                 <div style={styles.grid}>
                     {items.length > 0 ? (
@@ -195,6 +225,27 @@ function RequestedItems() {
 }
 
 const styles = {
+    searchForm: {
+        display: "flex",
+        gap: "10px",
+        marginBottom: "30px"
+    },
+    searchInput: {
+        flex: 1,
+        padding: "10px 12px",
+        borderRadius: "8px",
+        border: "1px solid #d1d5db",
+        fontSize: "14px"
+    },
+    searchButton: {
+        padding: "10px 16px",
+        backgroundColor: "#2563eb",
+        color: "white",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "600"
+    },
 
     resolveButton: {
         marginTop: "12px",

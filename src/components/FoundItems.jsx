@@ -8,6 +8,8 @@ function FoundItems() {
 
     const user = JSON.parse(localStorage.getItem("user")) || null;
     const isAuthorized = user?.IsAdmin || user?.IsStaff;
+    const [query, setQuery] = useState("");
+
 
     const mocks = [
         {
@@ -28,13 +30,26 @@ function FoundItems() {
         },
     ];
 
-    const fetchData = async () => {
+    const fetchData = async (searchQuery = "") => {
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:8080/api/item/get_found?query=", {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            });
+
+
+            const sql =
+                "SELECT * FROM found_items WHERE " +
+                "(name LIKE '%" + searchQuery + "%' " +
+                "OR description LIKE '%" + searchQuery + "%' " +
+                "OR location_found LIKE '%" + searchQuery + "%')";
+
+            const response = await fetch(
+                "http://localhost:8080/api/item/get_found",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sql })
+                }
+            );
+
 
             if (response.ok) {
                 const backendData = await response.json();
@@ -59,6 +74,7 @@ function FoundItems() {
             setLoading(false);
         }
     };
+
 
     const handleDelete = async (itemId) => {
         if (!window.confirm("Are you sure you want to delete this item?")) return;
@@ -107,14 +123,35 @@ function FoundItems() {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchData(query);
+    }, [query]);
+
 
     return (
         <div style={styles.page}>
             <div style={styles.container}>
                 <h1 style={styles.title}>Found Items</h1>
                 <p style={styles.subtitle}>Browse items that have been found</p>
+
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        fetchData(query);
+                    }}
+                    style={styles.searchForm}
+                >
+                    <input
+                        type="text"
+                        placeholder="Search by name, description, or location..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        style={styles.searchInput}
+                    />
+                    <button type="submit" style={styles.searchButton}>
+                        Search
+                    </button>
+                </form>
+
 
                 <div style={styles.grid}>
                     {items.length > 0 ? (
@@ -175,6 +212,29 @@ function FoundItems() {
 }
 
 const styles = {
+
+    searchForm: {
+        display: "flex",
+        gap: "10px",
+        marginBottom: "30px"
+    },
+    searchInput: {
+        flex: 1,
+        padding: "10px 12px",
+        borderRadius: "8px",
+        border: "1px solid #d1d5db",
+        fontSize: "14px"
+    },
+    searchButton: {
+        padding: "10px 16px",
+        backgroundColor: "#2563eb",
+        color: "white",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "600"
+    },
+
     buttonGroup: {
         display: "flex",
         gap: "10px",
