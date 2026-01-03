@@ -78,26 +78,16 @@ function RequestedItems() {
     const fetchData = async (searchQuery = "") => {
         try {
             setLoading(true);
-            const sql =
-                "SELECT * FROM found_items WHERE " +
-                "(name LIKE '%" + searchQuery + "%' " +
-                "OR description LIKE '%" + searchQuery + "%' " +
-                "OR location_found LIKE '%" + searchQuery + "%')";
 
             const response = await fetch(
-                "http://localhost:8080/api/item/get_requested",
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sql })
-                }
+                `http://localhost:8080/api/item/get_requested?search=${encodeURIComponent(searchQuery)}`
             );
 
             if (response.ok) {
                 const backendData = await response.json();
 
                 const formattedBackendData = backendData.map(backendItem => ({
-                    id: backendItem.id || Math.random().toString(),
+                    id: backendItem.Item.itemId || Math.random(),
                     name: backendItem.Item?.Name || "No Name",
                     description: backendItem.Item?.Description || "No Description",
                     location: backendItem.LastLocation || "Unknown",
@@ -105,7 +95,7 @@ function RequestedItems() {
                     bounty: backendItem.Bounty,
                 }));
 
-                setItems([...mocks, ...formattedBackendData]);
+                setItems([...formattedBackendData]);
             } else {
                 setItems(mocks);
             }

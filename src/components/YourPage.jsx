@@ -16,10 +16,9 @@ function YourPage() {
 
     const fetchClaimData = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/item/get_claim?query=", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
+            const response = await fetch(
+                `http://localhost:8080/api/item/get_claim?userId=${encodeURIComponent(user.userId)}`
+            );
 
             if (response.ok) {
                 const backendData = await response.json();
@@ -39,10 +38,9 @@ function YourPage() {
 
     const fetchRequestedData = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/item/get_requested?query=", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
+            const response = await fetch(
+                `http://localhost:8080/api/item/get_user_requested?userId=${encodeURIComponent(user.userId)}`
+            );
 
             if (response.ok) {
                 const backendData = await response.json();
@@ -94,7 +92,6 @@ function YourPage() {
                     </p>
                 </div>
 
-                {/* ---- CLAIMED ITEMS ---- */}
                 <h2 style={{ marginBottom: "12px" }}>Your Claims</h2>
                 <div style={styles.grid}>
                     {renderItems(claimedItems)}

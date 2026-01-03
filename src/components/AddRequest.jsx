@@ -18,16 +18,14 @@ function AddRequest() {
 
         const payload = {
             Item: {
+                Description: formData.description,
                 Name: formData.name,
-                Description: formData.description
             },
             Bounty: 0,
             LastLocation: formData.location,
             LastDate: formData.date,
-            User: {
-                username: user.username,
-                IsAdmin: user.IsAdmin,
-                IsStaff: user.IsStaff,
+            requestingUser: {
+                userId: user.userId,
             }
         };
 

@@ -34,20 +34,8 @@ function FoundItems() {
         try {
             setLoading(true);
 
-
-            const sql =
-                "SELECT * FROM found_items WHERE " +
-                "(name LIKE '%" + searchQuery + "%' " +
-                "OR description LIKE '%" + searchQuery + "%' " +
-                "OR location_found LIKE '%" + searchQuery + "%')";
-
             const response = await fetch(
-                "http://localhost:8080/api/item/get_found",
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sql })
-                }
+                `http://localhost:8080/api/item/get_found?query=${encodeURIComponent(searchQuery)}`
             );
 
 
@@ -55,7 +43,7 @@ function FoundItems() {
                 const backendData = await response.json();
 
                 const formattedBackendData = backendData.map(backendItem => ({
-                    id: backendItem.id || Math.random().toString(),
+                    id: backendItem.Item?.itemId || Math.random().toString(),
                     name: backendItem.Item?.Name || "No Name",
                     description: backendItem.Item?.Description || "No Description",
                     location: backendItem.LocationFound,
@@ -63,7 +51,7 @@ function FoundItems() {
                     imageUrl: backendItem.ImageURL
                 }));
 
-                setItems([...mocks, ...formattedBackendData]);
+                setItems([...formattedBackendData]);
             } else {
                 setItems(mocks);
             }
@@ -80,7 +68,7 @@ function FoundItems() {
         if (!window.confirm("Are you sure you want to delete this item?")) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/item/delete/${itemId}`, {
+            const response = await fetch(`http://localhost:8080/api/item/delete_found/${itemId}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
@@ -97,10 +85,8 @@ function FoundItems() {
         if (!item) return;
 
         const payload = {
-            Item: {
-                Name: item.name,
-                Description: item.description,
-            },
+            itemID: item.id,
+            userID: user.userId,
             ClaimedDate: new Date().toISOString().split("T")[0],
         };
 
