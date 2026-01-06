@@ -9,17 +9,39 @@ function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+    const onSubmit = async (e) => {
+        e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+        if (password !== confirmPassword) {
+            alert("Passwords do not match");
+            return;
+        }
 
-    alert("Registration successful! Please login.");
-    navigate("/login");
-  };
+        try {
+            const response = await fetch("http://localhost:8080/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: userId,
+                    password: password
+                })
+            });
+
+            if (response.status === 201) {
+                alert("Registration successful! Please login.");
+                navigate("/login");
+            } else {
+                const result = await response.json();
+                alert("Registration failed");
+            }
+
+        } catch (error) {
+            console.error("Registration error:", error);
+            alert("Server error. Please try again later.");
+        }
+    };
 
   return (
     <div style={styles.page}>

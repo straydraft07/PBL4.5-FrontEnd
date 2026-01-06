@@ -107,7 +107,7 @@ function AddLost() {
                         onChange={(e) => setFormData({...formData, date: e.target.value})}
                     />
 
-                    <button type="submit" style={styles.submitButton}>Submit Request</button>
+                    <button type="submit" style={styles.submitButton}>Submit Found Item</button>
                     <button type="button" onClick={() => navigate(-1)} style={styles.cancelButton}>Cancel</button>
                 </form>
             </div>
@@ -116,14 +116,14 @@ function AddLost() {
 }
 
 const styles = {
-    // --- LAYOUT STYLES ---
+
     page: {
         minHeight: "100vh",
         background: "linear-gradient(135deg, #f3f4f6, #e5e7eb)",
         padding: "40px"
     },
     container: {
-        maxWidth: "600px", // Form is usually narrower for better readability
+        maxWidth: "600px",
         margin: "0 auto"
     },
     title: {
@@ -135,7 +135,7 @@ const styles = {
         color: "#6b7280",
         marginBottom: "32px"
     },
-    // --- FORM STYLES ---
+
     form: {
         background: "#fff",
         padding: "30px",

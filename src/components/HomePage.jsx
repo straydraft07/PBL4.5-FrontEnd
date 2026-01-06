@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 function HomePage() {
   return (
     <div style={styles.page}>
-      {/* Header */}
       <header style={styles.header}>
         <div style={styles.headerInner}>
           <div style={styles.headerLeft}>
@@ -23,7 +22,6 @@ function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <section style={styles.hero}>
         <h1 style={styles.heroTitle}>
           <span style={styles.welcome}>Welcome to</span>
@@ -38,7 +36,6 @@ function HomePage() {
         </Link>
       </section>
 
-      {/* How It Works */}
       <section style={styles.howItWorks}>
         <h2 style={styles.howTitle}>How It Works</h2>
 

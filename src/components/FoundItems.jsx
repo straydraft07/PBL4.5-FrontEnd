@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function FoundItems() {
     const navigate = useNavigate();
-    const [items, setItems] = useState([]);
+        const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const user = JSON.parse(localStorage.getItem("user")) || null;

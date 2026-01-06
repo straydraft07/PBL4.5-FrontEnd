@@ -117,7 +117,7 @@ function YourPage() {
 }
 
 const styles = {
-    // --- LAYOUT STYLES (REQUIRED FOR ALL PAGES) ---
+
     page: {
         minHeight: "100vh",
         background: "linear-gradient(135deg, #f3f4f6, #e5e7eb)",
@@ -180,7 +180,7 @@ const styles = {
         cursor: "pointer"
     },
 
-    // --- YOURPAGE SPECIFIC STYLES ---
+
     profileSection: {
         background: "#fff",
         padding: "20px",

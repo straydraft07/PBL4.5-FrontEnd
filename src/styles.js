@@ -1,5 +1,5 @@
 const styles = {
-    // ... existing page, container, title styles ...
+
     profileSection: {
         background: "#fff",
         padding: "20px",

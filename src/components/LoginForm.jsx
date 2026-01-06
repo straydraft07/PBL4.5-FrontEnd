@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 function LoginForm() {
     const navigate = useNavigate();
 
-    // 1. State names must match what is used in the <input>
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -42,15 +42,14 @@ function LoginForm() {
                     <p style={styles.subtitle}>Enter your credentials to continue</p>
                 </div>
 
-                {/* 2. Changed 'onSubmit' to 'handleSubmit' */}
                 <form onSubmit={handleSubmit}>
                     <div style={styles.field}>
                         <label style={styles.label}>User ID</label>
                         <input
                             type="text"
-                            // 3. Changed 'userId' to 'username'
+
                             value={username}
-                            // 4. Changed 'setUserId' to 'setUsername'
+
                             onChange={(e) => setUsername(e.target.value)}
                             style={styles.input}
                             placeholder="Enter your user ID"
@@ -84,7 +83,7 @@ function LoginForm() {
     );
 }
 
-// ... styles remain the same
+
 
 const styles = {
   page: {

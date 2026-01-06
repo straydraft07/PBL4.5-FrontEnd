@@ -16,7 +16,7 @@ function Dashboard() {
     }
   }, [navigate]);
 
-// Inside your Dashboard component
+
     const cards = [
         {
             title: "Requested Items",

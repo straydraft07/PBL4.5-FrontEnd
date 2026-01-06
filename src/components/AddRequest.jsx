@@ -103,7 +103,7 @@ function AddRequest() {
 }
 
 const styles = {
-    // --- LAYOUT STYLES ---
+
     page: {
         minHeight: "100vh",
         background: "linear-gradient(135deg, #f3f4f6, #e5e7eb)",
@@ -122,7 +122,7 @@ const styles = {
         color: "#6b7280",
         marginBottom: "32px"
     },
-    // --- FORM STYLES ---
+
     form: {
         background: "#fff",
         padding: "30px",
