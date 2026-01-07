@@ -7,6 +7,7 @@ function YourPage() {
     const [claimedItems, setClaimedItems] = useState([]);
     const [requestedItems, setRequestedItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         setLoading(true);
@@ -17,7 +18,14 @@ function YourPage() {
     const fetchClaimData = async () => {
         try {
             const response = await fetch(
-                `http://localhost:8080/api/item/get_claim?userId=${encodeURIComponent(user.userId)}`
+                `http://localhost:8080/api/item/get_claim?userId=${encodeURIComponent(user.userId)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
 
             if (response.ok) {
@@ -39,7 +47,14 @@ function YourPage() {
     const fetchRequestedData = async () => {
         try {
             const response = await fetch(
-                `http://localhost:8080/api/item/get_user_requested?userId=${encodeURIComponent(user.userId)}`
+                `http://localhost:8080/api/item/get_user_requested?userId=${encodeURIComponent(user.userId)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
 
             if (response.ok) {
@@ -97,7 +112,6 @@ function YourPage() {
                     {renderItems(claimedItems)}
                 </div>
 
-                {/* ---- REQUESTED ITEMS ---- */}
                 <h2 style={{ marginTop: "40px", marginBottom: "12px" }}>
                     Your Requests
                 </h2>

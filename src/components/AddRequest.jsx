@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 function AddRequest() {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
 
     const [formData, setFormData] = useState({
         name: "",
@@ -33,7 +35,8 @@ function AddRequest() {
             const response = await fetch("http://localhost:8080/api/item/post_request", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(payload)
             });

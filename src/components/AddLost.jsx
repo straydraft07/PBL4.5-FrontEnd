@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 function AddLost() {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
 
     const [formData, setFormData] = useState({
         name: "",
@@ -38,6 +40,10 @@ function AddLost() {
 
         try {
             const response = await fetch("http://localhost:8080/api/item/post_found", {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 method: "POST",
                 body: form
             });

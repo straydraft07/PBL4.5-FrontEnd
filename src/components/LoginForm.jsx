@@ -9,6 +9,8 @@ function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const token = localStorage.getItem("token");
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -25,7 +27,13 @@ function LoginForm() {
         setIsLoading(false);
 
         if (userData != null) {
-            localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('token', userData.token);
+            localStorage.setItem('user', JSON.stringify({
+                userId: userData.userId,
+                username: userData.username,
+                IsAdmin: userData.IsAdmin
+            }));
+
             navigate('/dashboard');
             alert('Login Successful! Welcome.');
         } else {

@@ -5,6 +5,8 @@ function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const isAuthorized = user?.IsAdmin || user?.IsStaff;
+  const token = localStorage.getItem("token");
+
 
 
     useEffect(() => {

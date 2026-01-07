@@ -9,6 +9,7 @@ function FoundItems() {
     const user = JSON.parse(localStorage.getItem("user")) || null;
     const isAuthorized = user?.IsAdmin || user?.IsStaff;
     const [query, setQuery] = useState("");
+    const token = localStorage.getItem("token");
 
 
     const mocks = [
@@ -35,9 +36,15 @@ function FoundItems() {
             setLoading(true);
 
             const response = await fetch(
-                `http://localhost:8080/api/item/get_found?query=${encodeURIComponent(searchQuery)}`
+                `http://localhost:8080/api/item/get_found?query=${encodeURIComponent(searchQuery)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
-
 
             if (response.ok) {
                 const backendData = await response.json();
@@ -70,6 +77,10 @@ function FoundItems() {
         try {
             const response = await fetch(`http://localhost:8080/api/item/delete_found/${itemId}`, {
                 method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
             });
             if (response.ok) {
                 setItems(items.filter(item => item.id !== itemId));
@@ -93,7 +104,10 @@ function FoundItems() {
         try {
             const response = await fetch("http://localhost:8080/api/item/post_claim", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(payload),
             });
 

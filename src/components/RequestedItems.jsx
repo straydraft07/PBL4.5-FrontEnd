@@ -13,6 +13,7 @@ function RequestedItems() {
     const [selectedItem, setSelectedItem] = useState(null);
     const [awardUsername, setAwardUsername] = useState("");
     const [query, setQuery] = useState("");
+    const token = localStorage.getItem("token");
 
 
     const openResolveModal = (item) => {
@@ -35,7 +36,10 @@ function RequestedItems() {
         try {
             const response = await fetch("http://localhost:8080/api/item/reward_user", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     itemId: selectedItem.id,
                     username: awardUsername
@@ -80,7 +84,14 @@ function RequestedItems() {
             setLoading(true);
 
             const response = await fetch(
-                `http://localhost:8080/api/item/get_requested?search=${encodeURIComponent(searchQuery)}`
+                `http://localhost:8080/api/item/get_requested?search=${encodeURIComponent(searchQuery)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
 
             if (response.ok) {
