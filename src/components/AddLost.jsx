@@ -39,14 +39,16 @@ function AddLost() {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/api/item/post_found", {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                method: "POST",
-                body: form
-            });
+            const response = await fetch(
+                "http://localhost:8080/api/item/post_found",
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: form
+                }
+            );
 
             if (response.ok) {
                 alert("Item posted successfully!");
